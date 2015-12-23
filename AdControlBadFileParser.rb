@@ -5,14 +5,16 @@ require 'csv'
 # "C://temp//BadAdControlRecsLast7Days"
 # "C://temp//BadAdControlRecsLast7Days(Ruby).csv"
 def processFiles(folderDir, outputFileName)
-  keyDictionary = Hash.new(0)
+  keyDictionary = Hash.new(0)  # make sure values are zero'd out
 
-  Dir.foreach(folderDir) do |item|
-    next if item == '.' or item == '..'
-    File.open(folderDir + "//" + item).each do |line|
-      strings = line.split(",")
-      keys = "#{strings[3]}, #{strings[5]}, #{strings[6]}"
-      keyDictionary[keys] += 1
+  Dir.foreach(folderDir) do |fileName|
+    next if fileName == '.' or fileName == '..'
+    File.open(folderDir + "//" + fileName).each do |line|
+      id_array = line.split(",")
+      # need only these keys from file (Campaign Id, Creative Id, Placement Id)
+      lineKey = "#{id_array[3]}, #{id_array[5]}, #{id_array[6]}"
+      # total unique instances found across all files
+      keyDictionary[lineKey] += 1
     end
   end
   printOutResults(keyDictionary, outputFileName)
@@ -20,13 +22,14 @@ end
 
 def printOutResults(theDictionary, fileName)
   CSV.open(fileName, "wb") do |csv|
-    csv << ["CampId", "CreativeId", "PlacementId", "", "Total"]
+    # add header row to CSV
+    csv << ["CampaignId", "CreativeId", "PlacementId", "", "Total"]
+    # sort by key to ensure campaignId are grouped
     theKeys = theDictionary.keys.sort
     theKeys.each do |key|
-      split_key = key.split(",")
-      split_key << ""
-      split_key << theDictionary[key]
-      csv << split_key
+      data_array = key.split(",")
+      data_array << "" << theDictionary[key]
+      csv << data_array
      end
   end
 end
