@@ -1,5 +1,6 @@
 
 require './AdControlReader'
+require 'byebug'
 
 # ruby AdControlBadFileParser.rb
 # "C://temp//BadAdControlRecsLast7Days"
