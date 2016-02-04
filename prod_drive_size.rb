@@ -20,7 +20,9 @@ def get_disk_free_space(path)
     (result/1073741824.0).round(2)
 end
 
-def print_disk_sizes(server_prefix, server_list, c_min, d_min, include_d = true)
+def print_disk_sizes(title, server_prefix, server_list, c_min, d_min, include_d = true)
+  puts ""
+  puts "### #{title} \t\t C: #{c_min} \t\t D: #{d_min}"
   server_list.each do |server_name|
     d_path = "\\\\#{server_prefix}-#{server_name}.pointroll.local\\D$"
     c_path = "\\\\#{server_prefix}-#{server_name}.pointroll.local\\C$"
@@ -50,39 +52,37 @@ def red(text)
   colorize(text, 31)
 end
 
-# TODO: need to figure out how to make this dynamic
-puts "### AD SERVERS \t\t C: 9 \t\t D: 100"
-server_list = ["WEB06", "WEB07", "WEB08", "WEB09", "WEB10", "WEB11", "WEB12", "WEB13", "WEB14", "WEB15", "WEB16", "WEB17",
-  "WEB18", "WEB19", "WEB20", "WEB21", "WEB22", "WEB23", "WEB24", "WEB25", "WEB26", "WEB27", "WEB28", "WEB29"]
-print_disk_sizes("P-PR-ADS", server_list, 9, 100)
+def get_server_list(start_number, end_number)
+  server_list = (start_number..end_number).collect { |item| "WEB#{item.to_s.rjust(2,"0")}"}
+  server_list
+end
 
-puts ""
-puts "### TRACK SERVERS \t C: 8 \t\t D: 60"
-track_list = ["WEB21", "WEB22", "WEB23", "WEB24", "WEB25", "WEB26", "WEB27", "WEB28", "WEB29", "WEB30", "WEB31", "WEB32",
-  "WEB33", "WEB34", "WEB35", "WEB36", "WEB37", "WEB38", "WEB39", "WEB40"]
-print_disk_sizes("P-PR-TRK", track_list, 8, 60)
+server_list = get_server_list(6,29)
+print_disk_sizes("AD SERVERS", "P-PR-ADS", server_list, 9, 100)
 
-puts ""
-puts "### CLICK SERVERS \t C: 20 \t\t D: 49"
-click_list = ["WEB11", "WEB12", "WEB13", "WEB14"]
-print_disk_sizes("P-PR-CLK", click_list, 20, 49)
+track_list = get_server_list(21, 40)
+print_disk_sizes("TRACK", "P-PR-TRK", track_list, 8, 60)
 
-puts ""
-puts "### UTL SERVERS \t C: 12 \t\t D:40"
-util_list = ["DS01"]
-print_disk_sizes("P-PR-UTL", util_list, 12, 40)
+click_list = get_server_list(11, 14)
+print_disk_sizes("CLICK", "P-PR-CLK", click_list, 20, 49)
 
-puts ""
-puts "### ONP SERVERS \t C: 23 \t\t D: 40"
-onp_list = ["WEB11", "WEB12", "WEB13", "WEB14"]
-print_disk_sizes("P-PR-ONP", onp_list, 23, 40)
+util_list = ["DS01", "AS01", "MS01", "WEB03", "WEB04"]
+print_disk_sizes("UTL", "P-PR-UTL", util_list, 9, 20)
 
-puts ""
-puts "### ADP SERVERS \t C: 18"
-adp_list = ["WEB21", "WEB22", "WEB23", "WEB24"]
-print_disk_sizes("P-PR-ADP", adp_list, 18, 0, false)
+onp_list = get_server_list(11, 14)
+print_disk_sizes("ONP", "P-PR-ONP", onp_list, 23, 40)
 
-puts ""
-puts "### CCB SERVERS \t C: 25"
-ccb_list = ["WEB11", "WEB12"]
-print_disk_sizes("P-PR-CCB", ccb_list, 25, 0, false)
+adp_list = ["BAT11", "DFA11", "WEB21", "WEB22", "WEB23", "WEB24"]
+print_disk_sizes("ADP", "P-PR-ADP", adp_list, 18, 0, false)
+
+ccb_list = get_server_list(11,12)
+print_disk_sizes("CCB", "P-PR-CCB", ccb_list, 25, 0, false)
+
+med_list = get_server_list(11,12)
+print_disk_sizes("MED", "P-PR-MED", med_list, 12, 10)
+
+clt_list = get_server_list(11, 18)
+print_disk_sizes("CLT", "P-PR-CLT", clt_list, 20, 0, false)
+
+vcon_list = get_server_list(11, 12)
+print_disk_sizes("VCON SERVERS", "P-PR-VCON", vcon_list, 15, 0, false)

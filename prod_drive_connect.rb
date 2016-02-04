@@ -44,27 +44,37 @@ def connect_to_remote(server_prefix, server_list)
   end
 end
 
+def get_server_list(start_number, end_number)
+  server_list = (start_number..end_number).collect { |item| "WEB#{item.to_s.rjust(2,"0")}"}
+  server_list
+end
 
-# TODO: figure out how to make this dynamic
-server_list = ["WEB06", "WEB07", "WEB08", "WEB09", "WEB10", "WEB11", "WEB12", "WEB13", "WEB14", "WEB15", "WEB16", "WEB17",
-  "WEB18", "WEB19", "WEB20", "WEB21", "WEB22", "WEB23", "WEB24", "WEB25", "WEB26", "WEB27", "WEB28", "WEB29"]
+server_list = get_server_list(6,29)
 connect_to_remote("P-PR-ADS", server_list)
 
-track_list = ["WEB21", "WEB22", "WEB23", "WEB24", "WEB25", "WEB26", "WEB27", "WEB28", "WEB29", "WEB30", "WEB31", "WEB32",
-  "WEB33", "WEB34", "WEB35", "WEB36", "WEB37", "WEB38", "WEB39", "WEB40"]
+track_list = get_server_list(21, 40)
 connect_to_remote("P-PR-TRK", track_list)
 
-click_list = ["WEB11", "WEB12", "WEB13", "WEB14" ]
+click_list = get_server_list(11, 14)
 connect_to_remote("P-PR-CLK", click_list)
 
-util_list = ["DS01"]
+util_list = ["DS01", "AS01", "MS01", "WEB03", "WEB04"]
 connect_to_remote("P-PR-UTL", util_list)
 
-adp_list = ["WEB21", "WEB22", "WEB23", "WEB24"]
+adp_list = ["BAT11", "DFA11", "WEB21", "WEB22", "WEB23", "WEB24"]
 connect_to_remote("P-PR-ADP", adp_list)
 
-onp_list = ["WEB11", "WEB12", "WEB13", "WEB14"]
+onp_list = get_server_list(11, 14)
 connect_to_remote("P-PR-ONP", onp_list)
 
-ccb_list = ["WEB11", "WEB12"]
+ccb_list = get_server_list(11,12)
 connect_to_remote("P-PR-CCB", ccb_list)
+
+med_list = get_server_list(11,12)
+connect_to_remote("P-PR-MED", med_list)
+
+clt_list = get_server_list(11,18)
+connect_to_remote("P-PR-CLT", clt_list)
+
+vcon_list = get_server_list(11,12)
+connect_to_remote("P-PR-VCON", vcon_list)
