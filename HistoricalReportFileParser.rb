@@ -11,26 +11,41 @@ class HistoricalReportFileParser
         line = file.readline
         next unless cares_about_file_line?(line)
         next unless get_line_type(line) == "RowTotal"
-        start_time = parse_line_stamp(line)
         next_line = file.readline
-        end_time  = parse_line_stamp(next_line)
         row_count = parse_row_count(line)
-        total_time_in_minutes = ( (end_time - start_time) * 24 * 60).to_i
-
-        time_hash[total_time_in_minutes] = [] unless time_hash.key?(total_time_in_minutes)
-        time_hash[total_time_in_minutes] << row_count
+        total_time_in_minutes = get_total_time_in_minutes(line, next_line)
+        update_time_hash(time_hash, total_time_in_minutes, row_count)
       end
     end
     print_time_hash(time_hash)
   end
 
-  def print_time_hash(time_hash)
+  def update_time_hash(time_hash, total_time_in_minutes, row_count)
+    time_hash[total_time_in_minutes] = [] unless time_hash.key?(total_time_in_minutes)
+    time_hash[total_time_in_minutes] << row_count
+  end
+
+  def get_total_time_in_minutes(line, next_line)
+    start_time = parse_line_stamp(line)
+    return 0 if start_time == nil
+    end_time  = parse_line_stamp(next_line)
+    return 0 if end_time == nil
+    total_time_in_minutes = ( (end_time - start_time) * 24 * 60).to_i
+    total_time_in_minutes
+  end
+
+  def calculate_total_count_of_values(time_hash)
     total_count_of_values = 0
     time_hash.each do |key, value_array|
       total_count_of_values += value_array.size
     end
+    total_count_of_values
+  end
 
+  def print_time_hash(time_hash)
+    total_count_of_values = calculate_total_count_of_values(time_hash)
     puts "Total values is: #{format_number_with_commas(total_count_of_values)}"
+
     pct_of_total = 0.0
     time_hash.sort.map do |time_in_minutes, value_array|
       max_value_string = format_number_with_commas(get_max_value(value_array))
@@ -67,6 +82,7 @@ class HistoricalReportFileParser
 
   def parse_line_stamp(line)
     str_array = line.split(" ")
+    return nil if str_array.empty?
     time_string = str_array[0] + " " + str_array[1]
     return DateTime.parse(time_string)
   end
