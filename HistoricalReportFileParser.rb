@@ -3,7 +3,7 @@ require 'set'
 
 class HistoricalReportFileParser
 
-  def process_file_two(fullFileName)
+  def process_file(fullFileName)
     time_hash = {}
 
     File.open(fullFileName, "r") do |file|
@@ -60,12 +60,8 @@ class HistoricalReportFileParser
     the_number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
   end
 
-  def get_max_value(the_set)
-    max_value = 0
-    the_set.each do |set_value|
-      max_value = set_value.to_i unless max_value > set_value.to_i
-    end
-    max_value
+  def get_max_value(the_array_of_values)
+    the_array_of_values.max
   end
 
   def cares_about_file_line?(line)
@@ -75,21 +71,24 @@ class HistoricalReportFileParser
   end
 
   def get_line_type(line)
+    return "UNK" if line.nil?
     return "RowTotal" if line.include?("Total rows for Client_Type")
     return "END" if line.include?("END")
     return "UNK"
   end
 
   def parse_line_stamp(line)
+    return nil if line.nil?
     str_array = line.split(" ")
-    return nil if str_array.empty?
+    return nil if str_array.empty? or str_array.size < 2
     time_string = str_array[0] + " " + str_array[1]
     return DateTime.parse(time_string)
   end
 
   def parse_row_count(line)
+    return 0 if line.nil?
     str_array = line.split(" ")
-    str_array[8]
+    str_array[8].to_i
   end
 
 end

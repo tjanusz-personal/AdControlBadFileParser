@@ -7,4 +7,4 @@ require './HistoricalReportFileParser'
 
 parser = HistoricalReportFileParser.new
 #parser.processFile(ARGV[0])
-parser.process_file_two(ARGV[0])
+parser.process_file(ARGV[0])
