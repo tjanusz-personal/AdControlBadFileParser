@@ -88,17 +88,17 @@ RSpec.describe HistoricalReportFileParser do
     end
   end
 
-  describe "#get_max_value" do
+  describe "#avg_count_value" do
     context "with valid array of integer values" do
-      it "returns maximum value" do
-        values = [ 100, 200, 1, 600, 1]
-        max_number = parser.get_max_value(values)
-        expect(max_number).to eql(600)
+      it "returns average value" do
+        values = [ 100, 200, 300, 600]
+        max_number = parser.avg_count_value(values)
+        expect(max_number).to eql(300)
       end
     end
     context "with empty array" do
       it "returns nil" do
-        max_number = parser.get_max_value([])
+        max_number = parser.avg_count_value([])
         expect(max_number).to be nil
       end
     end
@@ -193,8 +193,16 @@ RSpec.describe HistoricalReportFileParser do
         parser.print_time_hash(time_hash)
         $stdout.rewind
         expect($stdout.gets.strip).to eql("Total values is: 3")
-        expect($stdout.gets.strip).to eql("XLSX Write Time in Minutes: 1 \t MaxRowCount: 300 \t\t Count: 2 \t %: 66.667")
-        expect($stdout.gets.strip).to eql("XLSX Write Time in Minutes: 2 \t MaxRowCount: 100 \t\t Count: 1 \t %: 33.333")
+        detail_line = $stdout.gets.strip
+        expect(detail_line).to include("XLSX Write Time in Minutes:   1")
+        expect(detail_line).to include("AvgRowCount:        250")
+        expect(detail_line).to include("Count:      2")
+        expect(detail_line).to include("66.667 %")
+        detail_line = $stdout.gets.strip
+        expect(detail_line).to include("XLSX Write Time in Minutes:   2")
+        expect(detail_line).to include("AvgRowCount:        100")
+        expect(detail_line).to include("Count:      1")
+        expect(detail_line).to include("33.333 %")
         expect($stdout.gets).to be nil
       end
     end
@@ -211,7 +219,7 @@ RSpec.describe HistoricalReportFileParser do
 
   describe "#process_file" do
     context "when passed valid file" do
-      it "processes file contents and writes output to console window" do
+      it "processes file contents and writes output to time hash" do
         dummy_file_contents = %q(
         2016-03-30 16:38:18.3917 -- START
         2016-03-30 16:38:22.4479 -- Historical Detail Record to Run: 166
@@ -239,37 +247,32 @@ RSpec.describe HistoricalReportFileParser do
         2016-03-30 16:40:50.1391 -- Total rows for Client_Type is: 1803
         2016-03-30 16:40:50.8256 -- END
           )
-
+        time_hash = {}
         buffer = StringIO.new(dummy_file_contents)
         filename = "TestFile.log"
         allow(File).to receive(:open).with(filename, "r").and_yield(buffer)
-        $stdout = StringIO.new
-        parser.process_file(filename)
-        $stdout.rewind
-        expect($stdout.gets.strip).to eql("Total values is: 2")
-        expect($stdout.gets.strip).to eql("XLSX Write Time in Minutes: 0 \t MaxRowCount: 6,793 \t\t Count: 2 \t %: 100.0")
+        parser.process_file(filename, time_hash)
+        expect(time_hash).to have_key(0)
+        expect(time_hash[0]).to eql([6793, 1803])
       end
     end
 
     context "when passed valid empty file" do
-      it "processes file contents and only writes Total Values line in console window" do
+      it "processes file contents and returns empty hash" do
+        time_hash = {}
         buffer = StringIO.new("")
         filename = "TestFile.log"
         allow(File).to receive(:open).with(filename, "r").and_yield(buffer)
-        $stdout = StringIO.new
-        parser.process_file(filename)
-        $stdout.rewind
-        expect($stdout.gets.strip).to eql("Total values is: 0")
-        expect($stdout.gets).to be nil
+        parser.process_file(filename, time_hash)
+        expect(time_hash).to be_empty
       end
     end
 
     context "when passed invalid file name" do
       it "raises SystemCallError" do
-        expect { parser.process_file("TestJunk.log") }.to raise_error(SystemCallError)
+        expect { parser.process_file("TestJunk.log", {} ) }.to raise_error(SystemCallError)
       end
     end
-
   end
 
 end

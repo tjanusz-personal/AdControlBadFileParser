@@ -3,9 +3,16 @@ require 'set'
 
 class HistoricalReportFileParser
 
-  def process_file(fullFileName)
+  def process_directory(folderDir)
     time_hash = {}
+    Dir.foreach(folderDir) do |fileName|
+      next if fileName == '.' or fileName == '..'
+      process_file(folderDir + "\\" + fileName, time_hash)
+    end
+    print_time_hash(time_hash)
+  end
 
+  def process_file(fullFileName, time_hash)
     File.open(fullFileName, "r") do |file|
       while !file.eof?
         line = file.readline
@@ -17,7 +24,6 @@ class HistoricalReportFileParser
         update_time_hash(time_hash, total_time_in_minutes, row_count)
       end
     end
-    print_time_hash(time_hash)
   end
 
   def update_time_hash(time_hash, total_time_in_minutes, row_count)
@@ -48,11 +54,11 @@ class HistoricalReportFileParser
 
     pct_of_total = 0.0
     time_hash.sort.map do |time_in_minutes, value_array|
-      max_value_string = format_number_with_commas(get_max_value(value_array))
+      avg_value_string = format_number_with_commas(avg_count_value(value_array))
       total_values_for_time = value_array.size
       total_values_string = format_number_with_commas(total_values_for_time)
       pct_of_total = (total_values_for_time.to_f / total_count_of_values.to_f) * 100
-      puts "XLSX Write Time in Minutes: #{time_in_minutes} \t MaxRowCount: #{max_value_string} \t\t Count: #{total_values_string} \t %: #{pct_of_total.round(3)}"
+      puts "XLSX Write Time in Minutes: #{time_in_minutes.to_s.rjust(3)} AvgRowCount: #{avg_value_string.rjust(10)}  Count: #{total_values_string.rjust(6)}  #{pct_of_total.round(3).to_s.rjust(6)} %"
     end
   end
 
@@ -60,8 +66,11 @@ class HistoricalReportFileParser
     the_number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
   end
 
-  def get_max_value(the_array_of_values)
-    the_array_of_values.max
+  def avg_count_value(the_array_of_values)
+    return nil if the_array_of_values.nil? or the_array_of_values.empty?
+    sum_of_values = 0
+    the_array_of_values.each { |a_value| sum_of_values += a_value }
+    return sum_of_values / the_array_of_values.size
   end
 
   def cares_about_file_line?(line)
