@@ -1,0 +1,36 @@
+Feature: EnoughSpace
+
+Scenario Outline: Prod Server with C and D drives
+  Given the server prefix <server_prefix>
+  When the servers <start_server_num> through <end_server_num> disk spaces are checked
+  Then the C Drive should have at least <c_drive_size> GB
+  And the D Drive should have at least <d_drive_size> GB
+
+  Examples:
+   |server_prefix|start_server_num|end_server_num|c_drive_size|d_drive_size|
+   |"P-PR-ADS"|6  |29 |9  |100|
+   |"P-PR-TRK"|21 |40 |8  |60|
+   |"P-PR-CLK"|11 |14 |20 |49|
+   |"P-PR-MED"|11 |12 |12 |10|
+   |"P-PR-ONP"|11 |14 |23 |40|
+
+Scenario Outline: Prod Server with C drive Only
+  Given the server prefix <server_prefix>
+  When the servers <start_server_num> through <end_server_num> C drives disk space checked
+  Then the C Drive should have at least <c_drive_size> GB
+  Examples:
+   |server_prefix|start_server_num|end_server_num|c_drive_size|
+   |"P-PR-CCB"|11  |12 |25|
+   |"P-PR-CLT"|11  |18 |20|
+   |"P-PR-VCON"|11 |12 |15|
+
+  Scenario: Prod Util servers
+    Given the server prefix "P-PR-UTL"
+    When the servers disk space checked include "DS01,AS01,MS01,WEB03,WEB04"
+    Then the C Drive should have at least 9 GB
+    And the D Drive should have at least 20 GB
+
+  Scenario: Prod ADP servers
+    Given the server prefix "P-PR-ADP"
+    When the servers C drive disk space checked include "BAT11,DFA11,WEB21,WEB22,WEB23,WEB24"
+    Then the C Drive should have at least 18 GB
