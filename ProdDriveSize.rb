@@ -51,4 +51,29 @@ class ProdDriveSize
     results
   end
 
+  def colorize(text, color_code)
+    "\e[#{color_code}m#{text}\e[0m"
+  end
+
+  def red(text)
+    colorize(text, 31)
+  end
+
+  def print_disk_sizes(title, server_results, c_min, d_min)
+    puts ""
+    puts "### #{title.ljust(37)} C: #{c_min.to_s.ljust(6)} D: #{d_min.to_s.ljust(6)}"
+    server_results.each_pair do |server_name, values|
+      c_space = values[0]
+      d_space = values[1]
+      if c_space < c_min
+        c_space = "#{red(c_space)}"
+      end
+
+      if d_space != "N/A" and d_space < d_min
+        d_space = "#{red(d_space)}"
+      end
+      puts "Server: #{server_name.ljust(33)} C: #{c_space.to_s.ljust(6)} D: #{d_space.to_s.ljust(6)}"
+    end
+  end
+
 end
