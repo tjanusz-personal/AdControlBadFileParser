@@ -12,6 +12,7 @@ class ProdDriveConnector
 
   def disconnect_from_remote(server_prefix, server_list)
     remove_connection = Win32API.new('mpr', 'WNetCancelConnection2', 'PII', 'I')
+    results = {}
     server_list.each do |server_name|
       remote_name = "\\\\#{server_prefix}-#{server_name}.pointroll.local"
       return_value = remove_connection.call(
@@ -19,8 +20,9 @@ class ProdDriveConnector
           CONNECT_UPDATE_PROFILE,  # dwFlags
           1            # fForce always force it to close
       )
-      puts "disconnect_from_remote #{remote_name} with return value: #{return_value}"
+      results[remote_name] = return_value
     end
+    results
   end
 
   def build_netresource(remote_name)
@@ -39,15 +41,17 @@ class ProdDriveConnector
 
   def connect_to_remote(server_prefix, server_list, user_name, user_password)
     add_connection = Win32API.new('mpr', 'WNetAddConnection2', 'PPPP', 'I')
+    result_hash = {}
     server_list.each do |server_name|
       remote_name = "\\\\#{server_prefix}-#{server_name}.pointroll.local"
-      netresource_struct = build_netresource(remote_name)
+      netresource_struct2 = build_netresource(remote_name)
       return_value = add_connection.call(
-        netresource_struct.pack('LLLLPPPP'),    # lpNetResource
-        user_password, user_name, nil           # dwFlags
-      )
-      puts "connecting to #{remote_name} with return value: #{return_value}"
+       netresource_struct2.pack('LLLLPPPP'),    # lpNetResource
+       user_password, user_name, nil           # dwFlags
+     )
+     result_hash[remote_name] = return_value
     end
+    result_hash
   end
 
   def get_server_list(start_number, end_number)

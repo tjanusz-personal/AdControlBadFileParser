@@ -40,7 +40,3 @@ see if anything is starting to go south.
     But the server has no D drive
     When the servers "BAT11,DFA11,WEB21,WEB22,WEB23,WEB24" disk spaces are checked
     Then the C Drive should have at least 18 GB
-
-  Scenario: Show Command line
-    When the command line is processed
-    Then the user name is outputted

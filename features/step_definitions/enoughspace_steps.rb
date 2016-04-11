@@ -36,11 +36,3 @@ def collect_errors(drive_hash, expected_drive_size, index)
   errors_hash = drive_hash.select { |key, values| values[index].to_i < expected_drive_size.to_i}
   errors_hash.keys
 end
-
-When /^the command line is processed$/ do
-  puts "User is: #{ENV['USER']} password is: #{ENV['PASSWORD']}"
-end
-
-Then /^the user name is outputted$/ do
-  pending # express the regexp above with the code you wish you had
-end

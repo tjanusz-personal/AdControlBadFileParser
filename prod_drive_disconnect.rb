@@ -8,5 +8,6 @@ require "./ProdDriveConnector"
 connector = ProdDriveConnector.new
 server_hash = connector.get_full_server_hash()
 server_hash.each_pair do |server_name, server_list|
-  connector.disconnect_from_remote(server_name, server_list)
+  results = connector.disconnect_from_remote(server_name, server_list)
+  results.each_pair {|remote_name, return_value| puts "disconnect from remote #{remote_name} with return value: #{return_value}"}
 end

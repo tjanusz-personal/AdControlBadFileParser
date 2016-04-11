@@ -12,5 +12,6 @@ connector = ProdDriveConnector.new
 server_hash = connector.get_full_server_hash()
 
 server_hash.each_pair do |server_name, server_list|
-  connector.connect_to_remote(server_name, server_list, USER_NAME, USER_PASSWORD)
+  results = connector.connect_to_remote(server_name, server_list, USER_NAME, USER_PASSWORD)
+  results.each_pair {|remote_name, return_value| puts "connecting to #{remote_name} with return value: #{return_value}"}
 end
