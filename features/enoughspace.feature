@@ -12,7 +12,7 @@ see if anything is starting to go south.
     And the D Drive should have at least <d_drive_size> GB
     Examples:
     |server_prefix|start_server_num|end_server_num|c_drive_size|d_drive_size|
-    |"P-PR-ADS"|6  |29 |9  |100|
+    |"P-PR-ADS"|6  |29 |8  |100|
     |"P-PR-TRK"|21 |40 |8  |60|
     |"P-PR-CLK"|11 |14 |20 |49|
     |"P-PR-MED"|11 |12 |12 |10|
