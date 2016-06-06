@@ -36,3 +36,6 @@ sizer.print_disk_sizes("UTIL SERVERS", util_results, 9, 20)
 adp_list = ["BAT11", "DFA11", "WEB21", "WEB22", "WEB23", "WEB24"]
 adp_results = sizer.query_disk_sizes("P-PR-ADP", adp_list, false)
 sizer.print_disk_sizes("ADP SERVERS", adp_results, 18, 0)
+
+rpt_results = sizer.get_disk_sizes("P-PR-RPT", 1, 2, true)
+sizer.print_disk_sizes("RPT SERVERS", rpt_results, 20, 35)

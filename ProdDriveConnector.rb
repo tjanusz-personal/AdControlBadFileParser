@@ -69,6 +69,7 @@ class ProdDriveConnector
     server_hash["P-PR-MED"] = get_server_list(11,12)
     server_hash["P-PR-CLT"] = get_server_list(11,18)
     server_hash["P-PR-VCON"] = get_server_list(11,12)
+    server_hash["P-PR-RPT"] = get_server_list(1,2)
     server_hash["P-PR-UTL"] = ["DS01", "AS01", "MS01", "WEB03", "WEB04"]
     server_hash["P-PR-ADP"] = ["BAT11", "DFA11", "WEB21", "WEB22", "WEB23", "WEB24"]
     server_hash
